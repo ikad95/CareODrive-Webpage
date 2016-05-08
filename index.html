@@ -54,9 +54,12 @@
                 success: function(resp) {
                     user    =   resp;
                     console.log(user);
+<<<<<<< HEAD
                     name = user['given_name'] +" "+ user['family_name'];
                     console.log(name);
                     $('body').text(name);
+=======
+>>>>>>> origin/gh-pages
                     $('#uName').text('Welcome ' + user.name);
                     $('#imgHolder').attr('src', user.picture);
                 },
