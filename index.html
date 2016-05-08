@@ -19,8 +19,6 @@
         var _url        =   OAUTHURL + 'scope=' + SCOPE + '&client_id=' + CLIENTID + '&redirect_uri=' + REDIRECT + '&response_type=' + TYPE;
         function login() {
             var win         =   window.open(_url, "windowname1", 'width=800, height=600'); 
-<<<<<<< HEAD
-
             var pollTimer   =   window.setInterval(function() { 
                 try {
                     console.log(win.document.URL);
@@ -84,8 +82,6 @@
                 return results[1];
         }
 
-=======
-
             var pollTimer   =   window.setInterval(function() { 
                 try {
                     console.log(win.document.URL);
@@ -125,12 +121,9 @@
                 success: function(resp) {
                     user    =   resp;
                     console.log(user);
-<<<<<<< HEAD
                     name = user['given_name'] +" "+ user['family_name'];
                     console.log(name);
                     $('body').text(name);
-=======
->>>>>>> origin/gh-pages
                     $('#uName').text('Welcome ' + user.name);
                     $('#imgHolder').attr('src', user.picture);
                 },
@@ -150,7 +143,6 @@
                 return results[1];
         }
 
->>>>>>> origin/gh-pages
         function startLogoutPolling() {
             $('#loginText').show();
             $('#logoutText').hide();
@@ -164,8 +156,6 @@
 
 <h1 align="center"> Welcome To CareOdrive.com !!!</h1>
 
-<<<<<<< HEAD
-
 <div class="container">
     <a class="btn btn-block btn-social btn btn-google" onclick="login()"><i class="fa fa-google"></i>Sign in with Google</a>
     <br>
@@ -174,7 +164,6 @@
     <div class="btn-group btn-group-justified">
         <a href="#" class="btn btn-primary">Logout</a>
     </div>
-=======
    <div class="container">
     <div class="btn-group btn-group-justified">
     <a href="#" onClick='login();' class="btn btn-primary">Google Login</a>
