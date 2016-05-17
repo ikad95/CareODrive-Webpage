@@ -1,0 +1,210 @@
+Problem:
+	Forest Gathering (Problem from CodeChef's May challenge 2016)
+
+	Chef is the head of commercial logging industry that recently bought a farm containing N trees. You are given initial height of the i-th tree by Hi and the rate of growth of height as Ri meters per month. For simplicity, you can assume that all the trees are perfect cylinders of equal radius. This allows us to consider only the height of trees when we talk about the amount of wood.
+	In Chef's country, laws don't allow one to cut a tree partially, so one has to cut the tree completely for gathering wood. Also, laws prohibit cutting trees of heights (strictly) lower than L meters.
+	Today Chef received an order of W meters (of height) of wood. Chef wants to deliver this order as soon as possible. Find out how minimum number of months he should wait after which he will able to fulfill the order. You can assume that Chef's company's sawing machines are very efficient and take negligible amount of time to cut the trees.
+	Input
+
+	There is a single test case per test file.
+	The first line of the input contains three space separated integers N, W and L denoting the number of trees in the farm, the amount of wood (in meters) that have to be gathered and the minimum allowed height of the tree to cut.
+	Each of next N lines contain two space separated integers denoting Hi and Ri respectively.
+	Output
+
+	Output a single integer denoting the number of months that have to pass before Chef will be able to fulfill the order.
+	Constraints
+
+	1 ≤ N ≤ 105
+	1 ≤ W, L ≤ 1018
+	1 ≤ Hi, Ri ≤ 109
+	Subtasks
+
+	Subtask #1 [40 points]: 1 ≤ N, W, L ≤ 104
+	Subtask #2 [60 points]: No additional constraints
+	Example
+
+	Input:
+	3 74 51
+	2 2
+	5 7
+	2 9
+
+	Output:
+	7
+	Explanation
+
+	After 6 months, heights of each tree will be 14, 47 and 56 respectively. Chef is allowed to cut only the third tree, sadly it is not enough to fulfill an order of 74 meters of wood.
+	After 7 months, heights of each tree will be 16, 54 and 65 respectively. Now Chef is allowed to cut second and third trees. Cutting both of them would provide him 119 meters of wood, which is enough to fulfill the order.
+
+
+Solution:
+	We can easily construct a naive brute force solution in which a loop starts from day = 0 and continues till the total amount of wood harvested is equal to or exceeds 'w'. 
+
+	Simple Solution :
+		#include<bits/stdc++.h>
+		using namespace std;
+		 
+		long long n,i;
+		long long h[100001],r[100001];
+		long long w,l;
+		 
+		bool notDelivered(){
+			int i;
+			long long sum=0;
+			for(i=1;i<=n&&sum<w;i++){
+				h[i]+=r[i];
+				if(h[i]>=l){
+					sum+=h[i];
+				}
+			}
+			if(sum>=w)
+				return 0;
+			return 1;	
+			
+		}
+		int main(){
+			long long count=1,sum=0;
+			scanf("%lld%lld%lld",&n,&w,&l);
+			for(i=1;i<=n;i++){
+				scanf("%lld%lld",&h[i],&r[i]);
+				if(h[i]>=l)
+					sum+=h[i];
+			}
+			if(sum>=w){
+				cout<<0<<endl;
+			}
+			while(notDelivered()){
+				count++;
+			}
+			cout<<count<<endl;
+			return 0;
+		} 
+
+	This solution has a worst case time complexity of O(d*n) where d=number of days required. As d can be very large, this solution will only give us 40 point out of 100.
+
+
+	Let us construct a more elegant solution for this problem. We will try to find the days required with a binary search like approach, by searching days from 0 to LLONG_MAX(The highest value of long long integer).
+	The upper limit can be reduced further. The days required cannot be more than days required by an individual tree. So we will set the upper limit to the minimum days required by a single tree.
+
+	C++ Implementation - 
+
+		#include<bits/stdc++.h>
+		using namespace std;
+
+		long long l,w,n,minexp=LLONG_MAX;
+		 
+		class trees {
+			public:
+		    long long h;
+		    long long r;
+			trees(long long hh,long long rr){
+				h=hh;
+				r=rr;
+				long long x=ceil((max(w,l)-h)/r);
+				if(minexp>max(x,(long long)0) && (h+r*x)>=l)
+					minexp=max(x,(long long)0);
+			}
+		};
+		 
+		vector<trees> v;
+		 
+		bool sum(long long days){
+			long long i=0,sum=0,x;
+			while(i!=n){
+				x=v[i].h+v[i].r*days;
+				if(x>=l)
+					sum+=x;
+				if(sum>=w)
+					return true;
+				i++;
+			}
+			if(sum>=w)
+				return true;
+			return false;
+		}
+		 
+		long long nxtLvlBS(long long l,long long r){
+			long long mid;
+			while(r!=l){
+				mid =(r+l)/2;
+				if(sum(mid)){
+					r=mid;
+				}
+				else{
+					l=mid+1;
+				}
+			}
+			return l;
+		}
+		 
+		int main(){
+			long long i=0,maxh=0,maxr=0,tmp,h,r,j;
+			scanf("%lld%lld%lld",&n,&w,&l);
+			for(i=0;i<n;i++){
+				scanf("%lld%lld",&h,&r);
+				trees t(h,r);
+				v.push_back(t);
+			}
+			printf("%lld\n",nxtLvlBS(0,minexp));
+			return 0;
+		}
+
+
+	Python implementation -
+
+		import sys,math
+		height=[]
+		rate=[]
+		 
+		def amountIsEnough(days):
+		    #returns true if at least w amount of wood is harvested, false otherwise
+		    i,amount=0,0
+		    while i!=n:
+		        x=height[i]+rate[i]*days
+		        if x >= l:
+		            amount += x
+		        if amount >= max(w,l):
+		            return True
+		        i+=1
+		    if amount >= max(w,l):
+		        return True
+		    return False
+		 
+		def findDaysRequired(minDay,maxDay):
+		    while minDay!=maxDay:
+		        mid = minDay + (maxDay - minDay)/2      #in python integers don't overflow!
+		        if amountIsEnough(mid):
+		            maxDay=mid
+		        else:
+		            minDay=mid+1
+		    return minDay
+		        
+		 
+		n,w,l=map(int,sys.stdin.readline().split())
+		maxexp=10**19
+		for i in range(n):
+		    h,r=map(int,sys.stdin.readline().split())
+		    x=int(math.ceil((max(w,l)-h)/r))
+		    if maxexp>max(0,x) and (h+r*x) >= l:
+		        maxexp=max(0,x)
+		    height.append(h)
+		    rate.append(r)
+		print findDaysRequired(0,maxexp)
+
+	The worst case time complexity is O(log(a)*n). As a = Max value of long long integer = 2^63-1. So worst case complexity boils down to O(63*n) ie O(n).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
